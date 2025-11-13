@@ -1,0 +1,208 @@
+import { useEffect, useState } from "react";
+import "./App.css";
+import { fetchState, newGame, sendMove, type GameState, type Piece } from "./api";
+import { getPieceSprite } from "./pieceSprites";
+
+function App() {
+  const [state, setState] = useState<GameState | null>(null);
+  const [selected, setSelected] = useState<{ x: number; y: number } | null>(null);
+  const [error, setError] = useState("");
+  const [showGameOver, setShowGameOver] = useState(false);
+  const [vsEngine, setVsEngine] = useState(true); // true = engine replies, false = two-player
+
+
+  useEffect(() => {
+    fetchState().then(setState);
+  }, []);
+
+  useEffect(() => {
+  if (state?.game_over) {
+    setShowGameOver(true);
+  } else {
+    setShowGameOver(false);
+  }
+}, [state?.game_over]);
+
+
+  const handleNewGame = async () => {
+    const s = await newGame();
+    setState(s);
+    setSelected(null);
+    setError("");
+  };
+
+  const handleSquareClick = async (x: number, y: number) => {
+    if (!state) return;
+    if (state.game_over) return; // no moves after game is over
+
+    // First click = select a piece
+    if (!selected) {
+      const piece = state.pieces.find((p) => p.x === x && p.y === y);
+      if (!piece) return;
+      setSelected({ x, y });
+      setError("");
+      return;
+    }
+
+    // Second click = attempt move
+    const fx = selected.x;
+    const fy = selected.y;
+    const tx = x;
+    const ty = y;
+
+    try {
+      const result = await sendMove(fx, fy, tx, ty, vsEngine);
+      if (result.error) {
+        setError(result.error);
+      } else if (result.state) {
+        setState(result.state);
+        setError("");
+      }
+    } catch {
+      setError("Network error");
+    }
+
+    setSelected(null);
+  };
+
+  if (!state) {
+    return <div className="app">Loading...</div>;
+  }
+return (
+  <div className="app">
+    <h1>Chessly</h1>
+
+    <label style={{ display: "block", marginBottom: "8px" }}>
+      <input
+        type="checkbox"
+        checked={vsEngine}
+        onChange={(e) => setVsEngine(e.target.checked)}
+      />
+      {" "}Play vs engine
+    </label>
+
+    <button onClick={handleNewGame}>New Game</button>
+    {error && <p className="error">{error}</p>}
+
+    <Board
+      state={state}
+      selected={selected}
+      onSquareClick={handleSquareClick}
+    />
+
+    <p>To move: {state.to_move}</p>
+
+    
+    {state.in_check && !state.game_over && (
+  <p className="check-text">
+    {state.in_check === "white" ? "White is in check!" : "Black is in check!"}
+  </p>
+)}
+
+{state.game_over && showGameOver && (
+  <div className="game-over-overlay">
+    <div className="game-over-panel">
+      <h2 className="game-over-title">
+        {state.winner
+          ? `${state.winner[0].toUpperCase() + state.winner.slice(1)} wins!`
+          : "Draw"}
+      </h2>
+      {state.checkmate && <p className="checkmate-text">Checkmate</p>}
+      <button
+        className="game-over-dismiss"
+        onClick={() => setShowGameOver(false)}
+      >
+        Dismiss
+      </button>
+    </div>
+  </div>
+)}
+  </div>
+  
+);
+
+
+interface BoardProps {
+  state: GameState;
+  selected: { x: number; y: number } | null;
+  onSquareClick: (x: number, y: number) => void;
+}
+
+function Board({ state, selected, onSquareClick }: BoardProps) {
+  const squares = [];
+
+  for (let y = 7; y >= 0; y--) {
+    for (let x = 0; x < 8; x++) {
+      const piece = state.pieces.find((p) => p.x === x && p.y === y);
+      const isSelected = selected?.x === x && selected?.y === y;
+
+      squares.push(
+        <Square
+          key={`${x}-${y}`}
+          x={x}
+          y={y}
+          piece={piece}
+          selected={!!isSelected}
+          onClick={() => onSquareClick(x, y)}
+        />
+      );
+    }
+  }
+
+  return <div className="board">{squares}</div>;
+}
+
+interface SquareProps {
+  x: number;
+  y: number;
+  piece?: Piece;
+  selected: boolean;
+  onClick: () => void;
+}
+
+function Square({ x, y, piece, selected, onClick }: SquareProps) {
+  const isDark = (x + y) % 2 === 1;
+  const className =
+    "square" +
+    (isDark ? " dark" : " light") +
+    (selected ? " selected" : "");
+
+  return (
+  <div className={className} onClick={onClick}>
+    {piece && <PieceImage piece={piece} />}
+  </div>
+);
+
+}
+function PieceImage({ piece }: { piece: Piece }) {
+  const src = getPieceSprite(piece);
+  if (!src) {
+    // fallback to letter if we don't have an image (e.g. future custom piece)
+    return <span>{pieceSymbol(piece)}</span>;
+  }
+  return (
+    <img
+      src={src}
+      alt={`${piece.color} ${piece.type}`}
+      className="piece-img"
+    />
+  );
+}
+
+function pieceSymbol(piece: Piece): string {
+  const map: Record<string, string> = {
+    king: "K",
+    queen: "Q",
+    rook: "R",
+    bishop: "B",
+    knight: "N",
+    pawn: "P",
+    super_rook: "S", // example custom piece
+  };
+  let ch = map[piece.type] || "?";
+  if (piece.color === "black") ch = ch.toLowerCase();
+  return ch;
+}
+}
+export default App;
+

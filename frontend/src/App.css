@@ -1,0 +1,118 @@
+.app {
+  /* Center this whole block inside the page */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  min-height: 100vh;
+  padding: 24px 16px;
+
+  max-width: 900px;
+  margin: 0 auto; /* center the block horizontally */
+}
+
+/* Title */
+.app h1 {
+  font-size: 3rem;
+  margin-bottom: 8px;
+}
+
+/* Board layout */
+.board {
+  display: grid;
+  grid-template-columns: repeat(8, 60px);
+  grid-template-rows: repeat(8, 60px);
+  border: 2px solid #333;
+  margin-top: 16px;
+}
+
+/* Squares */
+.square {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  user-select: none;
+  cursor: pointer;
+}
+
+.square.light {
+  background-color: #f0d9b5;
+}
+
+.square.dark {
+  background-color: #b58863;
+}
+
+.square.selected {
+  outline: 3px solid #ffcc00;
+}
+
+/* Piece images */
+.piece-img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+/* Errors and check text */
+.error {
+  margin-top: 8px;
+  color: #ff6b6b;
+}
+
+.check-text {
+  margin-top: 8px;
+  font-weight: 600;
+  color: #d32f2f;
+}
+
+/* Game over overlay */
+.game-over-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.game-over-panel {
+  background: #111;
+  padding: 32px 48px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+  border: 3px solid #ffd700;
+}
+
+.game-over-title {
+  font-size: 3rem;
+  margin: 0 0 12px;
+  color: #ffd700;
+  text-transform: uppercase;
+}
+
+.checkmate-text {
+  font-size: 1.5rem;
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+.game-over-dismiss {
+  padding: 8px 20px;
+  font-size: 1rem;
+  border-radius: 999px;
+  border: none;
+  background: #ffd700;
+  color: #111;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.game-over-dismiss:hover {
+  filter: brightness(1.1);
+}

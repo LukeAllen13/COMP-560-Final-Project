@@ -27,6 +27,7 @@ class MoveRequest(BaseModel):
     fy: int
     tx: int
     ty: int
+    auto_engine: bool = True  # default: play vs engine
 
 @app.get("/state")
 def get_state():
@@ -40,12 +41,12 @@ def new_game():
     game_board = Board()
     game_board.setup_start_position()
     return game_board.to_dict()
-
+    
 @app.post("/move")
 def make_move(req: MoveRequest):
     """
-    Human makes a move; engine responds with its move.
-    Coordinates are 0–7.
+    Human makes a move. If auto_engine is True, the engine also replies.
+    If auto_engine is False, only the human move is applied (human vs human).
     """
     global game_board
     human_move: Move = (req.fx, req.fy, req.tx, req.ty)
@@ -54,17 +55,18 @@ def make_move(req: MoveRequest):
     if human_move not in legal_moves:
         return {"error": "Illegal move"}
 
-    # Human move
+    # Apply human move
     game_board.make_move(human_move)
 
-    # Engine move
-    engine_move: Optional[Move] = choose_best_move(game_board, depth=3)
-    if engine_move is not None:
-        game_board.make_move(engine_move)
-        fx, fy, tx, ty = engine_move
-        engine_move_dict = {"fx": fx, "fy": fy, "tx": tx, "ty": ty}
-    else:
-        engine_move_dict = None
+    engine_move_dict = None
+
+    # Optionally let engine respond
+    if req.auto_engine:
+        engine_move: Optional[Move] = choose_best_move(game_board, depth=3)
+        if engine_move is not None:
+            game_board.make_move(engine_move)
+            fx, fy, tx, ty = engine_move
+            engine_move_dict = {"fx": fx, "fy": fy, "tx": tx, "ty": ty}
 
     return {
         "state": game_board.to_dict(),
