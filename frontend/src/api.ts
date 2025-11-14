@@ -25,6 +25,14 @@ export interface EngineMove {
   ty: number;
 }
 
+export interface RefereeResponse {
+  score: number;
+  white_pieces: Record<string, number>;
+  black_pieces: Record<string, number>;
+  to_move: string;
+  commentary: string;
+}
+
 export async function fetchState(): Promise<GameState> {
   const res = await fetch(`${API_URL}/state`);
   return await res.json();
@@ -49,6 +57,11 @@ export async function sendMove(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ fx, fy, tx, ty, auto_engine: autoEngine }),
   });
+  return await res.json();
+}
+
+export async function fetchRefereeCommentary(): Promise<RefereeResponse> {
+  const res = await fetch(`${API_URL}/referee`);
   return await res.json();
 }
 

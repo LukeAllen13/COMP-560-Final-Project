@@ -69,6 +69,13 @@
   color: #d32f2f;
 }
 
+.move-count {
+  margin-top: 4px;
+  font-weight: 500;
+  color: #555;
+  font-size: 0.95rem;
+}
+
 /* Game over overlay */
 .game-over-overlay {
   position: fixed;
@@ -115,4 +122,77 @@
 
 .game-over-dismiss:hover {
   filter: brightness(1.1);
+}
+
+/* Referee commentary bubble */
+.commentary-bubble {
+  margin-top: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 20px;
+  max-width: 600px;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.commentary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.commentary-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.commentary-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.commentary-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.commentary-content {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 16px;
+  color: #333;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.commentary-loading {
+  font-style: italic;
+  color: #666;
+  margin: 0;
+}
+
+.commentary-content p {
+  margin: 0;
 }

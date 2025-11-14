@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { fetchState, newGame, sendMove, type GameState, type Piece } from "./api";
+import { fetchState, newGame, sendMove, fetchRefereeCommentary, type GameState, type Piece } from "./api";
 import { getPieceSprite } from "./pieceSprites";
 
 function App() {
@@ -9,6 +9,10 @@ function App() {
   const [error, setError] = useState("");
   const [showGameOver, setShowGameOver] = useState(false);
   const [vsEngine, setVsEngine] = useState(true); // true = engine replies, false = two-player
+  const [moveCount, setMoveCount] = useState(0);
+  const [refereeCommentary, setRefereeCommentary] = useState<string | null>(null);
+  const [showCommentary, setShowCommentary] = useState(false);
+  const [isLoadingCommentary, setIsLoadingCommentary] = useState(false);
 
 
   useEffect(() => {
@@ -29,6 +33,9 @@ function App() {
     setState(s);
     setSelected(null);
     setError("");
+    setMoveCount(0);
+    setRefereeCommentary(null);
+    setShowCommentary(false);
   };
 
   const handleSquareClick = async (x: number, y: number) => {
@@ -57,6 +64,25 @@ function App() {
       } else if (result.state) {
         setState(result.state);
         setError("");
+        
+        // Count moves: +1 for player, +1 for engine if it moved
+        const movesThisTurn = result.engine_move ? 2 : 1;
+        const newMoveCount = moveCount + movesThisTurn;
+        setMoveCount(newMoveCount);
+        
+        // Check if we should fetch referee commentary (every 5 moves)
+        if (newMoveCount % 5 === 0) {
+          setIsLoadingCommentary(true);
+          setShowCommentary(true);
+          try {
+            const refereeData = await fetchRefereeCommentary();
+            setRefereeCommentary(refereeData.commentary);
+          } catch (err) {
+            setRefereeCommentary("Unable to fetch commentary at this time.");
+          } finally {
+            setIsLoadingCommentary(false);
+          }
+        }
       }
     } catch {
       setError("Network error");
@@ -91,12 +117,34 @@ return (
     />
 
     <p>To move: {state.to_move}</p>
+    <p className="move-count">Total moves: {moveCount}</p>
 
     
     {state.in_check && !state.game_over && (
   <p className="check-text">
     {state.in_check === "white" ? "White is in check!" : "Black is in check!"}
   </p>
+)}
+
+{showCommentary && (
+  <div className="commentary-bubble">
+    <div className="commentary-header">
+      <span className="commentary-title">🎙️ Referee Commentary</span>
+      <button 
+        className="commentary-close"
+        onClick={() => setShowCommentary(false)}
+      >
+        ×
+      </button>
+    </div>
+    <div className="commentary-content">
+      {isLoadingCommentary ? (
+        <p className="commentary-loading">Analyzing position...</p>
+      ) : (
+        <p>{refereeCommentary}</p>
+      )}
+    </div>
+  </div>
 )}
 
 {state.game_over && showGameOver && (
