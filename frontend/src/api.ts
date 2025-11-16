@@ -15,7 +15,10 @@ export interface GameState {
   game_over?: boolean;
   checkmate?: boolean;
   winner?: "white" | "black" | null;
+
+  eval?: number; // ← NEW: static evaluation, positive = white advantage
 }
+
 
 
 export interface EngineMove {

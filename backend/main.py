@@ -5,9 +5,10 @@ from pydantic import BaseModel
 from typing import Optional
 import ollama
 
-from engine.board import Board, Move
+from engine.board import Board, Move, WHITE, BLACK
 from engine.search import choose_best_move
 from engine.evaluation import evaluate
+
 
 app = FastAPI()
 
@@ -33,8 +34,11 @@ class MoveRequest(BaseModel):
 
 @app.get("/state")
 def get_state():
-    """Return current board state."""
-    return game_board.to_dict()
+    """Return current board state, including evaluation."""
+    state = game_board.to_dict()
+    state["eval"] = evaluate(game_board)  # positive = white better
+    return state
+
 
 @app.post("/new-game")
 def new_game():
@@ -70,10 +74,16 @@ def make_move(req: MoveRequest):
             fx, fy, tx, ty = engine_move
             engine_move_dict = {"fx": fx, "fy": fy, "tx": tx, "ty": ty}
 
+    state = game_board.to_dict()
+    state["eval"] = evaluate(game_board)
+
     return {
-        "state": game_board.to_dict(),
+        "state": state,
         "engine_move": engine_move_dict,
     }
+
+
+
 
 @app.get("/referee")
 def referee():

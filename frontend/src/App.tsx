@@ -110,13 +110,16 @@ return (
     <button onClick={handleNewGame}>New Game</button>
     {error && <p className="error">{error}</p>}
 
-    <Board
-      state={state}
-      selected={selected}
-      onSquareClick={handleSquareClick}
-    />
+    <div className="board-row">
+  <Board
+    state={state}
+    selected={selected}
+    onSquareClick={handleSquareClick}/>
+    <EvalBar score={state.eval ?? 0} />
+  </div>
 
-    <p>To move: {state.to_move}</p>
+<p>To move: {state.to_move}</p>
+
     <p className="move-count">Total moves: {moveCount}</p>
 
     
@@ -129,7 +132,7 @@ return (
 {showCommentary && (
   <div className="commentary-bubble">
     <div className="commentary-header">
-      <span className="commentary-title">🎙️ Referee Commentary</span>
+      <span className="commentary-title">Referee Analysis</span>
       <button 
         className="commentary-close"
         onClick={() => setShowCommentary(false)}
@@ -168,6 +171,34 @@ return (
   </div>
   
 );
+
+
+function EvalBar({ score }: { score: number }) {
+  // Clamp score to [-6, 6] for display
+  const clamped = Math.max(-6, Math.min(6, score));
+  // Map [-6, 6] to [0, 100] — 0 = full black, 100 = full white, 50 = equal
+  const percentWhite = ((clamped + 6) / 12) * 100;
+
+  return (
+    <div className="eval-bar">
+      <div className="eval-label eval-label-black">Black</div>
+      <div className="eval-bar-outer">
+        <div
+          className="eval-bar-inner"
+          style={{ height: `${percentWhite}%` }}
+        />
+      </div>
+      <div className="eval-label eval-label-white">White</div>
+      <div className="eval-score">
+        {clamped.toFixed(1).startsWith("-0")
+          ? "0.0"
+          : clamped.toFixed(1)}{" "}
+        {/* score from White's perspective */}
+      </div>
+    </div>
+  );
+}
+
 
 
 interface BoardProps {
