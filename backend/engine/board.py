@@ -2,7 +2,7 @@
 from typing import List, Optional, Tuple, Dict, Any
 from .piece_types import (
     Piece, PieceType, WHITE, BLACK,
-    ROOK, BISHOP, QUEEN, KNIGHT, KING, PAWN_VALUE, SUPER_ROOK
+    ROOK, BISHOP, QUEEN, KNIGHT, KING, PAWN_VALUE, SUPER_KNIGHT
 )
 
 WHITE = 1
@@ -71,7 +71,7 @@ class Board:
         self.board[0][3] = Piece(WHITE, QUEEN)
         self.board[0][4] = Piece(WHITE, KING)
         self.board[0][5] = Piece(WHITE, BISHOP)
-        self.board[0][6] = Piece(WHITE, KNIGHT)
+        self.board[0][6] = Piece(WHITE, SUPER_KNIGHT)
         self.board[0][7] = Piece(WHITE, ROOK)
 
         for x in range(8):
@@ -102,7 +102,7 @@ class Board:
         self.board[7][3] = Piece(BLACK, QUEEN)
         self.board[7][4] = Piece(BLACK, KING)
         self.board[7][5] = Piece(BLACK, BISHOP)
-        self.board[7][6] = Piece(BLACK, KNIGHT)
+        self.board[7][6] = Piece(BLACK, SUPER_KNIGHT)
         self.board[7][7] = Piece(BLACK, ROOK)
 
         # Side to move

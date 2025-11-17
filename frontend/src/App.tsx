@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { fetchState, newGame, sendMove, fetchRefereeCommentary, type GameState, type Piece } from "./api";
+import { fetchState, newGame, sendMove, fetchRefereeCommentary, fetchEvaluation, type GameState, type Piece } from "./api";
 import { getPieceSprite } from "./pieceSprites";
 
 function App() {
@@ -13,10 +13,12 @@ function App() {
   const [refereeCommentary, setRefereeCommentary] = useState<string | null>(null);
   const [showCommentary, setShowCommentary] = useState(false);
   const [isLoadingCommentary, setIsLoadingCommentary] = useState(false);
+  const [evaluationScore, setEvaluationScore] = useState(0);
 
 
   useEffect(() => {
     fetchState().then(setState);
+    fetchEvaluation().then(setEvaluationScore);
   }, []);
 
   useEffect(() => {
@@ -36,6 +38,7 @@ function App() {
     setMoveCount(0);
     setRefereeCommentary(null);
     setShowCommentary(false);
+    setEvaluationScore(0);
   };
 
   const handleSquareClick = async (x: number, y: number) => {
@@ -64,6 +67,9 @@ function App() {
       } else if (result.state) {
         setState(result.state);
         setError("");
+        
+        // Update evaluation score
+        fetchEvaluation().then(setEvaluationScore);
         
         // Count moves: +1 for player, +1 for engine if it moved
         const movesThisTurn = result.engine_move ? 2 : 1;
@@ -109,6 +115,8 @@ return (
 
     <button onClick={handleNewGame}>New Game</button>
     {error && <p className="error">{error}</p>}
+
+    <AdvantageBar score={evaluationScore} />
 
     <Board
       state={state}
@@ -169,6 +177,40 @@ return (
   
 );
 
+
+interface AdvantageBarProps {
+  score: number;
+}
+
+function AdvantageBar({ score }: AdvantageBarProps) {
+  // Clamp the score to a reasonable range for visualization (-10 to +10)
+  const maxScore = 10;
+  const clampedScore = Math.max(-maxScore, Math.min(maxScore, score));
+  
+  // Calculate percentages (50% is even, shift based on score)
+  const whitePercent = 50 + (clampedScore / maxScore) * 50;
+  const blackPercent = 100 - whitePercent;
+  
+  return (
+    <div className="advantage-bar-container">
+      <div className="advantage-bar-label">
+        <span className="white-label">White</span>
+        <span className="score-display">{score > 0 ? "+" : ""}{score.toFixed(1)}</span>
+        <span className="black-label">Black</span>
+      </div>
+      <div className="advantage-bar">
+        <div 
+          className="advantage-bar-white"
+          style={{ width: `${whitePercent}%` }}
+        />
+        <div 
+          className="advantage-bar-black"
+          style={{ width: `${blackPercent}%` }}
+        />
+      </div>
+    </div>
+  );
+}
 
 interface BoardProps {
   state: GameState;

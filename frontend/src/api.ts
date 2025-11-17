@@ -65,3 +65,8 @@ export async function fetchRefereeCommentary(): Promise<RefereeResponse> {
   return await res.json();
 }
 
+export async function fetchEvaluation(): Promise<number> {
+  const res = await fetch(`${API_URL}/evaluation`);
+  const data = await res.json();
+  return data.score;
+}
