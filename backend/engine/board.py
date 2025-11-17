@@ -204,6 +204,16 @@ class Board:
             # forward
             if self.in_bounds(x, ny) and self.board[ny][x] is None:
                 moves.append((x, y, x, ny))
+                if(piece.color == WHITE):
+                    if piece in self.board[1]:
+                        ny2 = y + 2 * direction
+                        if self.in_bounds(x, ny2) and self.board[ny2][x] is None:
+                            moves.append((x, y, x, ny2))
+                else:
+                    if piece in self.board[6]:
+                        ny2 = y + 2 * direction
+                        if self.in_bounds(x, ny2) and self.board[ny2][x] is None:
+                            moves.append((x, y, x, ny2))
 
             # captures
             for dx in (-1, 1):
