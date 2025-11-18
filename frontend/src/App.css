@@ -76,6 +76,61 @@
   font-size: 0.95rem;
 }
 
+/* Advantage bar */
+.advantage-bar-container {
+  margin: 16px 0;
+  width: 100%;
+  max-width: 480px;
+}
+
+.advantage-bar-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.white-label {
+  color: #666;
+}
+
+.black-label {
+  color: #333;
+}
+
+.score-display {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #444;
+}
+
+.advantage-bar {
+  display: flex;
+  height: 24px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  border: 2px solid #333;
+}
+
+.advantage-bar-white {
+  background: linear-gradient(90deg, #f0f0f0 0%, #ffffff 100%);
+  transition: width 0.4s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.advantage-bar-black {
+  background: linear-gradient(90deg, #555555 0%, #222222 100%);
+  transition: width 0.4s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
 /* Game over overlay */
 .game-over-overlay {
   position: fixed;
@@ -195,4 +250,58 @@
 
 .commentary-content p {
   margin: 0;
+}
+
+
+.board-row {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+  justify-content: center;
+}
+
+
+
+.eval-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.9rem;
+  min-width: 60px;
+}
+
+.eval-bar-outer {
+  position: relative;
+  width: 24px;
+  height: 320px; /* roughly 8 squares tall if squares are 40px */
+  border-radius: 999px;
+  overflow: hidden;
+  border: 2px solid #333;
+  background: linear-gradient(to top, #1a1a1a, #f5f5f5);
+  display: flex;
+  flex-direction: column-reverse; /* so fill grows from bottom (white) */
+}
+
+.eval-bar-inner {
+  width: 100%;
+  background: #f5f5f5; /* white side fill */
+  transition: height 0.2s ease-out;
+}
+
+.eval-label {
+  margin: 4px 0;
+  font-weight: 600;
+}
+
+.eval-label-black {
+  color: #ddd;
+}
+
+.eval-label-white {
+  color: #fff;
+}
+
+.eval-score {
+  margin-top: 8px;
+  font-weight: 600;
 }

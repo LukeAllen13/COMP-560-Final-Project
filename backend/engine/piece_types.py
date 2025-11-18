@@ -60,6 +60,16 @@ KNIGHT = PieceType(
     sliding=False,
 )
 
+SUPER_KNIGHT = PieceType(
+    name="super_knight",
+    value=5,
+    directions=[
+        (2, 2), (-2, 2),
+        (-2, -2),(2, -2), 
+    ],
+    sliding=False,
+)
+
 KING = PieceType(
     name="king",
     value=1000,
@@ -68,10 +78,3 @@ KING = PieceType(
 )
 
 
-# Example custom piece:
-SUPER_ROOK = PieceType(
-    name="super_rook",
-    value=8,
-    directions=ROOK.directions,
-    sliding=True,
-)

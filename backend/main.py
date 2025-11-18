@@ -5,9 +5,10 @@ from pydantic import BaseModel
 from typing import Optional
 import ollama
 
-from engine.board import Board, Move
+from engine.board import Board, Move, WHITE, BLACK
 from engine.search import choose_best_move
 from engine.evaluation import evaluate
+
 
 app = FastAPI()
 
@@ -33,8 +34,11 @@ class MoveRequest(BaseModel):
 
 @app.get("/state")
 def get_state():
-    """Return current board state."""
-    return game_board.to_dict()
+    """Return current board state, including evaluation."""
+    state = game_board.to_dict()
+    state["eval"] = evaluate(game_board)  # positive = white better
+    return state
+
 
 @app.post("/new-game")
 def new_game():
@@ -70,10 +74,16 @@ def make_move(req: MoveRequest):
             fx, fy, tx, ty = engine_move
             engine_move_dict = {"fx": fx, "fy": fy, "tx": tx, "ty": ty}
 
+    state = game_board.to_dict()
+    state["eval"] = evaluate(game_board)
+
     return {
-        "state": game_board.to_dict(),
+        "state": state,
         "engine_move": engine_move_dict,
     }
+
+
+
 
 @app.get("/referee")
 def referee():
@@ -128,17 +138,17 @@ def referee():
     # Create prompt for LLM
     prompt = f"""You are a chess referee providing commentary on the current game state.
 
-Current evaluation score: {score} (positive = white advantage, negative = black advantage)
+Current evaluation score: {score}
+If the score is > 0 , White has the advantage; if < 0, Black has the advantage.
 
 White pieces remaining: {white_list}
 Black pieces remaining: {black_list}
 
-Whose turn: {"White" if game_board.to_move == 1 else "Black"}
 
 Piece positions on the board:
 {positions_text}
 
-Provide a brief, engaging analysis of the current position in 2-3 sentences. Comment on material balance, who has the advantage, piece positioning and control of key squares, and any tactical or strategic observations."""
+Provide a brief, engaging analysis of the current position in 2-3 sentences."""
 
     try:
         # Call Llama 3.2 via Ollama
@@ -153,7 +163,7 @@ Provide a brief, engaging analysis of the current position in 2-3 sentences. Com
         commentary = response['message']['content']
         
     except Exception as e:
-        commentary = f"Referee unavailable: {str(e)}"
+        commentary = f"Referee unavailable: make sure to download the Llama 3.2 model locally. Error: {str(e)}"
     
     return {
         "score": score,
@@ -163,3 +173,9 @@ Provide a brief, engaging analysis of the current position in 2-3 sentences. Com
         "commentary": commentary
     }
 
+@app.get("/evaluation")
+def get_evaluation():
+    """Return the current evaluation score."""
+    global game_board
+    score = evaluate(game_board)
+    return {"score": score}

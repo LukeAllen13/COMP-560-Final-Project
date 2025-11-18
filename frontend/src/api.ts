@@ -15,7 +15,10 @@ export interface GameState {
   game_over?: boolean;
   checkmate?: boolean;
   winner?: "white" | "black" | null;
+
+  eval?: number; // ← NEW: static evaluation, positive = white advantage
 }
+
 
 
 export interface EngineMove {
@@ -65,3 +68,8 @@ export async function fetchRefereeCommentary(): Promise<RefereeResponse> {
   return await res.json();
 }
 
+export async function fetchEvaluation(): Promise<number> {
+  const res = await fetch(`${API_URL}/evaluation`);
+  const data = await res.json();
+  return data.score;
+}
