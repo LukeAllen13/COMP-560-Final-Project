@@ -10,11 +10,19 @@ cd backend
 uvicorn main:app --reload
 ```
 
-Start another terminal with the follow commands:
+Start another terminal with the following commands:
 ```bash
 cd frontend
 npm install
 npm run dev
+
+```
+
+To access the LLM referee, you must have Ollama installed and have Llama3.2 downloaded locally. Downlaod ollama from this link, https://ollama.com/download, then run the following commands in a seperate terminal:
+
+```bash
+ollama pull llama3.2
+ollama run llama3.2
 
 ```
 
