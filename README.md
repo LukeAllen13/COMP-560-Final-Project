@@ -2,12 +2,15 @@
 Final project for COMP 560
 
 ## How to run:
+```bash
 pip install -r requirements.txt
 cd backend
 uvicorn main:app --reload
 cd frontend
 npm install
 npm run dev
+
+```
 
 ## Description...
 Our project is a fully interactive chess engine built from scratch using AI concepts covered in class. Our main goal was to create a system that not only plays chess using adversarial search, but also demonstrates core course ideas such as heuristic eval, zero-sum modeling, and inteligent decision-making under uncertainty. The project includes a custom rules engine, a modern frontend, and an optional LLM-based "referee" feature which was inspired by projects that combine symbolic AI with generative models. 
