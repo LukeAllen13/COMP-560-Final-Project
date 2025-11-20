@@ -2,11 +2,16 @@
 Final project for COMP 560
 
 ## How to run:
+
+Start a new terminal and type the following commands:
 ```bash
 pip install -r requirements.txt
 cd backend
 uvicorn main:app --reload
-cd ..
+```
+
+Start another terminal with the follow commands:
+```bash
 cd frontend
 npm install
 npm run dev
