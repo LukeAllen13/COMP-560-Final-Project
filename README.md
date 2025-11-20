@@ -23,4 +23,4 @@ Frontend:
 The frontend (React + Typescript) renders theboard, tracks interactions, and displays the engine's standing through an evaluation bar that updates after each move. This visualizes the heuristic value of the position as the search sees it. The optional referee mode, powered by Ollama, allows users to request natural-language explanations of positions, blending symbolic and generative AI to deepen understanding. 
 
 PVP: 
-We added a toggle on/off for the AI, so you can play vs someone else (on the same device). 
+We added a toggle on/off for the AI, so you can play vs someone else locally
