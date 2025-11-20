@@ -6,6 +6,7 @@ Final project for COMP 560
 pip install -r requirements.txt
 cd backend
 uvicorn main:app --reload
+cd ..
 cd frontend
 npm install
 npm run dev
