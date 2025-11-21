@@ -18,7 +18,7 @@ npm run dev
 
 ```
 
-To access the LLM referee, you must have Ollama installed and have Llama3.2 downloaded locally. Downlaod ollama from this link, https://ollama.com/download, then run the following commands in a seperate terminal:
+To access the LLM referee, you must have Ollama installed and have Llama3.2 downloaded locally. Download ollama from this link, https://ollama.com/download, then run the following commands in a seperate terminal:
 
 ```bash
 ollama pull llama3.2
